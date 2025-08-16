@@ -1,33 +1,20 @@
+// /routes/emailRoutes.js
 import express from "express";
-import nodemailer from "nodemailer";
+import { sendEmail } from "../services/emailService.js";
 
 const router = express.Router();
 
-router.post("/send-email", async (req, res) => {
+router.post("/send", async (req, res) => {
   try {
-    const { senderEmail, senderPassword, receiverEmail, subject, text } = req.body;
+    const { to, subject, text, html } = req.body;
+    if (!to || (!text && !html)) {
+      return res.status(400).json({ success: false, message: "Missing fields" });
+    }
 
-    
-    const transporter = nodemailer.createTransport({
-      service: "gmail", 
-      auth: {
-        user: senderEmail,
-        pass: senderPassword,
-      },
-    });
-
-    const mailOptions = {
-      from: senderEmail,
-      to: receiverEmail,
-      subject: subject || "Shared Summary",
-      text,
-    };
-
-    await transporter.sendMail(mailOptions);
-
+    await sendEmail({ to, subject, text, html });
     res.json({ success: true, message: "Email sent successfully!" });
   } catch (error) {
-    console.error(error);
+    console.error("Email error:", error);
     res.status(500).json({ success: false, message: "Failed to send email" });
   }
 });
