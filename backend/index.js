@@ -1,12 +1,8 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import aiRoutes from "./routes/aiRoutes.js";
 import emailRoutes from "./routes/emailRoutes.js";
 
-if (process.env.NODE_ENV !== "production") {
-  dotenv.config();
-}
 
 
 const app = express();
