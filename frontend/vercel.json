@@ -8,6 +8,6 @@
     }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/frontend/(.*)", "dest": "/frontend/index.html" }
   ]
 }
