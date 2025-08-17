@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import aiRoutes from "./routes/aiRoutes.js";
 import emailRoutes from "./routes/emailRoutes.js";
 
-dotenv.config({ path: "./config/.env" });
+dotenv.config();
 
 const app = express();
 app.use(cors());
