@@ -29,9 +29,9 @@ export default function Home() {
   const handleChange = (setter) => (e) => setter(e.target.value);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 flex p-6 gap-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 flex flex-col lg:flex-row p-4 lg:p-6 gap-4 lg:gap-6">
       {/* Left Panel */}
-      <div className="w-1/3 bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-6 flex flex-col gap-6">
+      <div className="w-full lg:w-1/3 bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-4 lg:p-6 flex flex-col gap-4 lg:gap-6">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">AI Notes</h1>
 
         <InputSection
@@ -60,8 +60,8 @@ export default function Home() {
       </div>
 
       {/* Right Panel */}
-      <div className="w-2/3">
-        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-6 h-full flex flex-col gap-4">
+      <div className="w-full lg:w-2/3">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-4 lg:p-6 h-full flex flex-col gap-4">
           <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
             Summary
           </h2>
