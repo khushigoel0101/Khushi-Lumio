@@ -12,10 +12,10 @@ export const sendEmail = async ({ to, subject, text, html }) => {
   });
 
   await transporter.sendMail({
-    from: `"AI Notes" <${process.env.BREVO_SMTP_USER}>`,
-    to,
-    subject,
-    text,
-    html,
-  });
+  from: `"AI Notes" <${process.env.BREVO_SENDER_EMAIL}>`, // must be your validated sender
+  to,
+  subject,
+  text,
+});
+
 };
