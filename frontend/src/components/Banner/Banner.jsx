@@ -31,7 +31,7 @@ const Banner = () => {
           {/* Buttons */}
           <div className="flex gap-4 mt-6">
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/login")}
               className="bg-amber-600 text-white px-6 py-2 rounded-lg hover:bg-amber-800 transition shadow-md hover:shadow-lg"
             >
               Get Started

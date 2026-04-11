@@ -25,6 +25,20 @@ export const login = async ({ email, password }) => {
   return res.data;
 };
 
+export const googleLogin = async (credential) => {
+  const res = await API.post("/api/auth/google", { credential });
+
+  if (res.data.token) {
+    localStorage.setItem("authToken", res.data.token);
+  }
+
+  if (res.data.user) {
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+  }
+
+  return res.data;
+};
+
 export const validateToken = async () => {
   const res = await API.get("/api/auth/validate");
   return res.data.valid;
