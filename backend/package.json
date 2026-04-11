@@ -13,11 +13,14 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "googleapis": "^156.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.5.0",
     "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.5",
     "openai": "^5.12.2"

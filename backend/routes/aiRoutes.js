@@ -1,10 +1,10 @@
 import express from "express";
 import { generateAIResponse } from "../services/aiService.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-
-router.post("/summarize", async (req, res) => {
+router.post("/summarize", authenticateToken, async (req, res) => {
   try {
     const { text, prompt } = req.body;
     const summary = await generateAIResponse(text, prompt);

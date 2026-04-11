@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { sendEmail } from "../services/api";
+import { sendEmail } from "../../services/api";
 import { PaperAirplaneIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 
 export default function SummaryEditor({ summary, setSummary }) {

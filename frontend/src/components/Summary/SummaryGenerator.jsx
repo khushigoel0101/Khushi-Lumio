@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { generateSummary } from "../services/api";
+import { generateSummary } from "../../services/api";
 import { ArrowPathIcon } from "@heroicons/react/24/outline"; // loading spinner
 
-export default function SummaryGenerator({ transcript, prompt, onSummaryGenerated }) {
+export default function SummaryGenerator({ transcript, prompt, onSummaryGenerated, disabled }) {
   const [loading, setLoading] = useState(false);
 
   const handleGenerate = async () => {
+    if (disabled) {
+      alert("Please log in first to generate summaries.");
+      return;
+    }
     if (!transcript.trim()) {
       alert("Please enter a transcript first.");
       return;
@@ -13,7 +17,7 @@ export default function SummaryGenerator({ transcript, prompt, onSummaryGenerate
     setLoading(true);
     try {
       const res = await generateSummary(transcript, prompt);
-      onSummaryGenerated(res.summary); 
+      onSummaryGenerated(res.summary);
     } catch (err) {
       console.error(err);
       alert("Failed to generate summary");
@@ -25,7 +29,7 @@ export default function SummaryGenerator({ transcript, prompt, onSummaryGenerate
   return (
     <button
       onClick={handleGenerate}
-      disabled={loading}
+      disabled={loading || disabled}
       className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold px-5 py-3 rounded-xl shadow-lg hover:scale-105 transform transition disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {loading ? (

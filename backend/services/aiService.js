@@ -1,4 +1,7 @@
 import fetch from "node-fetch";
+import dotenv from "dotenv";
+
+dotenv.config({ path: './config/.env' });
 
 export async function generateAIResponse(text, prompt) {
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
