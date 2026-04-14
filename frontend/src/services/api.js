@@ -5,23 +5,42 @@ const API = axios.create({
 });
 
 API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token && config.headers) {
+  const token = localStorage.getItem("authToken");
+
+  if (token) {
+    config.headers = config.headers || {};
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
 // Auth
-export const register = async ({ email, password }) => {
-  const res = await API.post("/api/auth/register", { email, password });
-  localStorage.setItem("token", res.data.token);
+export const register = async ({ fullName, email, password }) => {
+  const res = await API.post("/api/auth/register", {
+    fullName,
+    email,
+    password,
+  });
+
+  localStorage.setItem("authToken", res.data.token);
+
+  if (res.data.user) {
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+  }
+
   return res.data;
 };
 
 export const login = async ({ email, password }) => {
   const res = await API.post("/api/auth/login", { email, password });
-  localStorage.setItem("token", res.data.token);
+
+  localStorage.setItem("authToken", res.data.token);
+
+  if (res.data.user) {
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+  }
+
   return res.data;
 };
 
@@ -44,8 +63,30 @@ export const validateToken = async () => {
   return res.data.valid;
 };
 
+export const getCurrentUser = async () => {
+  const storedUser = localStorage.getItem("user");
+
+  if (storedUser) {
+    try {
+      return JSON.parse(storedUser);
+    } catch {
+      localStorage.removeItem("user");
+    }
+  }
+
+  const res = await API.get("/api/auth/validate");
+
+  if (res.data.user) {
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+    return res.data.user;
+  }
+
+  return null;
+};
+
 export const logout = () => {
-  localStorage.removeItem("token");
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("user");
 };
 
 // AI Summary

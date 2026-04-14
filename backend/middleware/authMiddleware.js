@@ -1,18 +1,36 @@
 import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-export function authenticateToken(req, res, next) {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
+export const authenticateToken = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
 
-  if (!token) {
-    return res.status(401).json({ error: "Missing auth token" });
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({ error: "Invalid auth token" });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "No token provided",
+      });
     }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findOne({ email: decoded.email }).select("-password");
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
     req.user = user;
     next();
-  });
-}
+  } catch (error) {
+    console.error("authenticateToken error:", error);
+    res.status(401).json({
+      success: false,
+      message: "Invalid or expired token",
+    });
+  }
+};
