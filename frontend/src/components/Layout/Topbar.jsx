@@ -42,13 +42,13 @@ const Topbar = () => {
             + New
           </button>
 
-          {/* Profile */}
+         
           <div className="relative">
             <button
               onClick={() => setOpen(!open)}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-200 text-sm font-semibold text-slate-700"
             >
-              U
+              K
             </button>
 
             {open && (

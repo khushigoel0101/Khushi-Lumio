@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import AuthLayout from "../components/Auth/AuthLayout";
-import AuthField from "../components/Auth/AuthField";
+import AuthLayout from "../components/auth/AuthLayout";
+import AuthField from "../components/auth/AuthField";
 import loginImg from "../assets/undraw_authentication_1evl.svg";
 import { login as loginApi, googleLogin as googleLoginApi } from "../services/api";
 

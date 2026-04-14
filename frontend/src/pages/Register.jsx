@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import AuthLayout from "../components/Auth/AuthLayout";
-import AuthField from "../components/Auth/AuthField";
+import AuthLayout from "../components/auth/AuthLayout";
+import AuthField from "../components/auth/AuthField";
 import reg from "../assets/register.svg";
 import { register as registerApi, googleLogin as googleLoginApi } from "../services/api";
 
