@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import AppLayout from "../components/layout/AppLayout";
+import AppLayout from "../components/Layout/AppLayout";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
 import {
