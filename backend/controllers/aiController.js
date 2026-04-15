@@ -1,3 +1,5 @@
+
+import mammoth from "mammoth";
 import { generateAIResponse } from "../services/aiService.js";
 
 const DEFAULT_PROMPT = `
@@ -20,6 +22,36 @@ Decisions:
 
 If any section is missing, write "Not mentioned".
 `.trim();
+
+const extractTextFromFile = async (file) => {
+  const fileType = file.mimetype;
+  const fileName = file.originalname.toLowerCase();
+
+  const pdfModule = await import("pdf-parse");
+  const pdf = pdfModule.default || pdfModule;
+
+  if (fileType === "application/pdf" || fileName.endsWith(".pdf")) {
+    const data = await pdf(file.buffer);
+    return data.text.trim();
+  }
+
+  if (
+    fileType ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+    fileName.endsWith(".docx")
+  ) {
+    const result = await mammoth.extractRawText({ buffer: file.buffer });
+    return result.value.trim();
+  }
+
+  if (fileType === "application/msword" || fileName.endsWith(".doc")) {
+    throw new Error(
+      ".doc files are not supported for text extraction yet. Please use PDF or DOCX."
+    );
+  }
+
+  return file.buffer.toString("utf-8").trim();
+};
 
 export const summarizeText = async (req, res) => {
   try {
@@ -80,7 +112,7 @@ export const summarizeUploadedFile = async (req, res) => {
       return res.status(400).json({ error: "File is required." });
     }
 
-    const fileText = req.file.buffer.toString("utf-8").trim();
+    const fileText = await extractTextFromFile(req.file);
 
     if (!fileText) {
       return res.status(400).json({ error: "Uploaded file is empty." });
@@ -126,3 +158,4 @@ export const summarizeUploadedFile = async (req, res) => {
     });
   }
 };
+

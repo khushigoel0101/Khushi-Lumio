@@ -110,12 +110,12 @@ ${decisionsText}
 
   const handleGenerateFromText = async () => {
     if (!meetingTitle.trim()) {
-      setError("Please enter a meeting title.");
+      alert("Please enter a meeting title.");
       return;
     }
 
     if (!text.trim()) {
-      setError("Please paste some meeting notes first.");
+      alert("Please paste some meeting notes first.");
       return;
     }
 
@@ -145,7 +145,7 @@ ${decisionsText}
       setSuccessMessage("Summary generated and saved successfully.");
     } catch (err) {
       console.error(err);
-      setError(
+      alert(
         err?.response?.data?.message ||
           err?.response?.data?.error ||
           "Failed to generate summary from text."
@@ -157,12 +157,12 @@ ${decisionsText}
 
   const handleGenerateFromFile = async () => {
     if (!meetingTitle.trim()) {
-      setError("Please enter a meeting title.");
+      alert("Please enter a meeting title.");
       return;
     }
 
     if (!selectedFile) {
-      setError("Please select a file first.");
+      alert("Please select a file first.");
       return;
     }
 
@@ -199,7 +199,7 @@ ${decisionsText}
       setSuccessMessage("Summary generated from file and saved successfully.");
     } catch (err) {
       console.error(err);
-      setError(
+      alert(
         err?.response?.data?.message ||
           err?.response?.data?.error ||
           "Failed to generate summary from file."
@@ -236,7 +236,7 @@ ${
       setSuccessMessage("Summary copied to clipboard.");
     } catch (err) {
       console.error(err);
-      setError("Could not copy summary.");
+      alert("Could not copy summary.");
     }
   };
 
@@ -250,7 +250,7 @@ ${
 
   const handleSendEmail = async () => {
     if (!emailTo.trim()) {
-      setError("Please enter a recipient email.");
+      alert("Please enter a recipient email.");
       return;
     }
 
@@ -277,7 +277,7 @@ ${
       }, 1200);
     } catch (err) {
       console.error(err);
-      setError(
+      alert(
         err?.response?.data?.message ||
           err?.response?.data?.error ||
           "Failed to send email."
@@ -405,7 +405,7 @@ ${
                   </p>
                 </div>
                 <span className="text-xs font-medium uppercase tracking-wide text-slate-600">
-                  TXT, MD, JSON, XML, CSV
+                  TXT, PDF, DOC, DOCX
                 </span>
               </div>
 
@@ -413,7 +413,7 @@ ${
                 <input
                   ref={localFileInputRef}
                   type="file"
-                  accept=".txt,.md,.json,.xml,.csv"
+                  accept=".txt,.pdf,.doc,.docx"
                   className="hidden"
                   onChange={handleLocalFileChange}
                 />

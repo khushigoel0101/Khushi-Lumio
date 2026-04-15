@@ -8,9 +8,13 @@ const allowedMimeTypes = [
   "application/json",
   "application/xml",
   "text/csv",
+  "application/pdf",
+  "application/msword", 
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 
-const allowedExtensions = [".txt", ".md", ".json", ".xml", ".csv"];
+const allowedExtensions = [".txt", ".md", ".json", ".xml", ".csv",".pdf",
+  ".doc", ".docx",];
 
 const fileFilter = (req, file, cb) => {
   const originalName = file.originalname.toLowerCase();
