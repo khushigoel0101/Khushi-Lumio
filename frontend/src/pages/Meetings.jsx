@@ -150,47 +150,8 @@ const Meetings = () => {
   return (
     
       <AppLayout>
-
       <div className="flex-1">
-        
-
         <main className="space-y-6 p-4 sm:p-6">
-          <section className="rounded-3xl bg-gradient-to-r from-amber-700 via-amber-800 to-slate-900 p-6 text-white shadow-sm">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div className="max-w-2xl">
-                <p className="mb-2 inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-amber-100">
-                  Meeting History
-                </p>
-                <h1 className="text-2xl font-bold sm:text-3xl">
-                  {id ? "Meeting Details" : "All Meetings"}
-                </h1>
-                <p className="mt-3 text-sm leading-6 text-amber-100 sm:text-base">
-                  {id
-                    ? "Review the full saved meeting summary, action items, and decisions."
-                    : "Browse saved meetings, review summaries, and manage action items and decisions in one place."}
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                {id && (
-                  <button
-                    onClick={() => navigate("/meetings")}
-                    className="rounded-2xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
-                  >
-                    Back to All Meetings
-                  </button>
-                )}
-
-                <button
-                  onClick={() => navigate("/generate")}
-                  className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:scale-[1.01]"
-                >
-                  New Meeting
-                </button>
-              </div>
-            </div>
-          </section>
-
           {!id && (
             <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

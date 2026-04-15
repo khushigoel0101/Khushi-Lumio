@@ -15,7 +15,6 @@ import {
 
 
 import API from "../services/api";
-import App from "../App";
 
 const Dashboard = () => {
   const navigate = useNavigate();
