@@ -17,7 +17,7 @@ const Generate = () => {
   const [actionItems, setActionItems] = useState([]);
   const [decisions, setDecisions] = useState([]);
 
-  const [loading, setLoading] = useState(false);
+  const [loadingType, setLoadingType] = useState(null); // "text" | "file" | null
   const [sendingEmail, setSendingEmail] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -31,6 +31,7 @@ const Generate = () => {
 
   useEffect(() => {
     if (uploadedFile) {
+      setText("");
       setSelectedFile(uploadedFile);
       setSuccessMessage(`File selected: ${uploadedFile.name}`);
     }
@@ -80,14 +81,33 @@ ${decisionsText}
     localFileInputRef.current?.click();
   };
 
+  const handleTextChange = (e) => {
+    const value = e.target.value;
+    setText(value);
+
+    if (value.trim()) {
+      setSelectedFile(null);
+      resetOutput();
+      clearMessages();
+    }
+  };
+
   const handleLocalFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setText("");
     setSelectedFile(file);
+    resetOutput();
     clearMessages();
     setSuccessMessage(`File selected: ${file.name}`);
     e.target.value = "";
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+    clearMessages();
+    setSuccessMessage("File removed. You can paste notes now.");
   };
 
   const saveMeeting = async ({
@@ -110,19 +130,19 @@ ${decisionsText}
 
   const handleGenerateFromText = async () => {
     if (!meetingTitle.trim()) {
-      alert("Please enter a meeting title.");
+      setError("Please enter a meeting title.");
       return;
     }
 
     if (!text.trim()) {
-      alert("Please paste some meeting notes first.");
+      setError("Please paste some meeting notes first.");
       return;
     }
 
     try {
       clearMessages();
       resetOutput();
-      setLoading(true);
+      setLoadingType("text");
 
       const res = await API.post("/api/ai/summarize", { text });
 
@@ -145,31 +165,31 @@ ${decisionsText}
       setSuccessMessage("Summary generated and saved successfully.");
     } catch (err) {
       console.error(err);
-      alert(
+      setError(
         err?.response?.data?.message ||
           err?.response?.data?.error ||
           "Failed to generate summary from text."
       );
     } finally {
-      setLoading(false);
+      setLoadingType(null);
     }
   };
 
   const handleGenerateFromFile = async () => {
     if (!meetingTitle.trim()) {
-      alert("Please enter a meeting title.");
+      setError("Please enter a meeting title.");
       return;
     }
 
     if (!selectedFile) {
-      alert("Please select a file first.");
+      setError("Please select a file first.");
       return;
     }
 
     try {
       clearMessages();
       resetOutput();
-      setLoading(true);
+      setLoadingType("file");
 
       const formData = new FormData();
       formData.append("file", selectedFile);
@@ -199,13 +219,13 @@ ${decisionsText}
       setSuccessMessage("Summary generated from file and saved successfully.");
     } catch (err) {
       console.error(err);
-      alert(
+      setError(
         err?.response?.data?.message ||
           err?.response?.data?.error ||
           "Failed to generate summary from file."
       );
     } finally {
-      setLoading(false);
+      setLoadingType(null);
     }
   };
 
@@ -236,7 +256,7 @@ ${
       setSuccessMessage("Summary copied to clipboard.");
     } catch (err) {
       console.error(err);
-      alert("Could not copy summary.");
+      setError("Could not copy summary.");
     }
   };
 
@@ -250,7 +270,7 @@ ${
 
   const handleSendEmail = async () => {
     if (!emailTo.trim()) {
-      alert("Please enter a recipient email.");
+      setError("Please enter a recipient email.");
       return;
     }
 
@@ -277,7 +297,7 @@ ${
       }, 1200);
     } catch (err) {
       console.error(err);
-      alert(
+      setError(
         err?.response?.data?.message ||
           err?.response?.data?.error ||
           "Failed to send email."
@@ -371,23 +391,38 @@ ${
               <div className="p-5">
                 <textarea
                   value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  placeholder="Paste your meeting notes here..."
-                  className="h-72 w-full border border-slate-300 p-4 text-sm text-slate-800 outline-none transition focus:border-amber-600"
+                  onChange={handleTextChange}
+                  disabled={!!selectedFile || loadingType !== null}
+                  placeholder={
+                    selectedFile
+                      ? "Remove the selected file to paste notes."
+                      : "Paste your meeting notes here..."
+                  }
+                  className="h-72 w-full border border-slate-300 p-4 text-sm text-slate-800 outline-none transition focus:border-amber-600 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                 />
+
+                {selectedFile && (
+                  <p className="mt-2 text-sm text-slate-500">
+                    A file is selected, so notes input is disabled.
+                  </p>
+                )}
 
                 <div className="mt-4 flex flex-wrap gap-3">
                   <button
                     onClick={handleGenerateFromText}
-                    disabled={loading || !text.trim()}
+                    disabled={loadingType !== null || !text.trim() || !!selectedFile}
                     className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {loading ? "Generating..." : "Generate from Text"}
+                    {loadingType === "text" ? "Generating..." : "Generate from Text"}
                   </button>
 
                   <button
-                    onClick={() => setText("")}
-                    disabled={loading || !text}
+                    onClick={() => {
+                      setText("");
+                      resetOutput();
+                      clearMessages();
+                    }}
+                    disabled={loadingType !== null || !text}
                     className="rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Clear Text
@@ -428,8 +463,18 @@ ${
                     </p>
                   </div>
                 ) : (
-                  <div className="border border-dashed border-slate-300 px-4 py-8 text-center">
-                    <p className="text-sm text-slate-600">No file selected yet.</p>
+                  <div
+                    className={`border border-dashed px-4 py-8 text-center ${
+                      text.trim()
+                        ? "border-slate-200 bg-slate-100"
+                        : "border-slate-300"
+                    }`}
+                  >
+                    <p className="text-sm text-slate-600">
+                      {text.trim()
+                        ? "Clear pasted notes to upload a file."
+                        : "No file selected yet."}
+                    </p>
                     <p className="mt-1 text-sm text-slate-500">
                       Choose a supported file to continue.
                     </p>
@@ -439,7 +484,7 @@ ${
                 <div className="mt-4 flex flex-wrap gap-3">
                   <button
                     onClick={handleLocalFilePick}
-                    disabled={loading}
+                    disabled={loadingType !== null || !!text.trim()}
                     className="rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Choose File
@@ -447,11 +492,21 @@ ${
 
                   <button
                     onClick={handleGenerateFromFile}
-                    disabled={loading || !selectedFile}
+                    disabled={loadingType !== null || !selectedFile || !!text.trim()}
                     className="rounded-xl bg-amber-700 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-amber-800 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {loading ? "Generating..." : "Generate from File"}
+                    {loadingType === "file" ? "Generating..." : "Generate from File"}
                   </button>
+
+                  {selectedFile && (
+                    <button
+                      onClick={handleRemoveFile}
+                      disabled={loadingType !== null}
+                      className="rounded-xl border border-red-200 px-5 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Remove File
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
