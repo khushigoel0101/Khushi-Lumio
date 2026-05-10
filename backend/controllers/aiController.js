@@ -1,5 +1,5 @@
-
 import mammoth from "mammoth";
+import { PDFParse } from "pdf-parse";
 import { generateAIResponse } from "../services/aiService.js";
 
 const DEFAULT_PROMPT = `
@@ -23,16 +23,34 @@ Decisions:
 If any section is missing, write "Not mentioned".
 `.trim();
 
+const parseAIResponse = (raw) => {
+  const summaryMatch = raw.match(/Summary:(.*?)(Action Items:|Decisions:|$)/is);
+  const actionsMatch = raw.match(/Action Items:(.*?)(Decisions:|$)/is);
+  const decisionsMatch = raw.match(/Decisions:(.*)/is);
+
+  const cleanList = (text = "") =>
+    text
+      .split("\n")
+      .map((item) => item.replace(/^\s*(\d+\.|-|\*)\s*/, "").trim())
+      .filter(Boolean)
+      .filter((item) => item.toLowerCase() !== "not mentioned");
+
+  return {
+    summary: summaryMatch ? summaryMatch[1].trim() : raw.trim(),
+    actionItems: actionsMatch ? cleanList(actionsMatch[1]) : [],
+    decisions: decisionsMatch ? cleanList(decisionsMatch[1]) : [],
+  };
+};
+
 const extractTextFromFile = async (file) => {
   const fileType = file.mimetype;
   const fileName = file.originalname.toLowerCase();
 
-  const pdfModule = await import("pdf-parse");
-  const pdf = pdfModule.default || pdfModule;
-
   if (fileType === "application/pdf" || fileName.endsWith(".pdf")) {
-    const data = await pdf(file.buffer);
-    return data.text.trim();
+     const parser = new PDFParse({ data: file.buffer });
+     const result = await parser.getText();
+
+     return result.text.trim();
   }
 
   if (
@@ -46,7 +64,7 @@ const extractTextFromFile = async (file) => {
 
   if (fileType === "application/msword" || fileName.endsWith(".doc")) {
     throw new Error(
-      ".doc files are not supported for text extraction yet. Please use PDF or DOCX."
+      ".doc files are not supported. Please upload PDF, DOCX, TXT, MD, CSV, JSON, or XML."
     );
   }
 
@@ -62,42 +80,21 @@ export const summarizeText = async (req, res) => {
     }
 
     const raw = await generateAIResponse(
-      String(text),
+      String(text).trim(),
       prompt?.trim() || DEFAULT_PROMPT
     );
 
-    const summaryMatch = raw.match(/Summary:(.*?)(Action Items:|Decisions:|$)/s);
-    const actionsMatch = raw.match(/Action Items:(.*?)(Decisions:|$)/s);
-    const decisionsMatch = raw.match(/Decisions:(.*)/s);
+    const parsed = parseAIResponse(raw);
 
-    const summary = summaryMatch ? summaryMatch[1].trim() : raw.trim();
-
-    const actionItems = actionsMatch
-      ? actionsMatch[1]
-          .split("\n")
-          .map((a) => a.replace(/^\s*(\d+\.|-)\s*/, "").trim())
-          .filter(Boolean)
-          .filter((a) => a.toLowerCase() !== "not mentioned")
-      : [];
-
-    const decisions = decisionsMatch
-      ? decisionsMatch[1]
-          .split("\n")
-          .map((d) => d.replace(/^\s*(\d+\.|-)\s*/, "").trim())
-          .filter(Boolean)
-          .filter((d) => d.toLowerCase() !== "not mentioned")
-      : [];
-
-    res.json({
+    return res.json({
       success: true,
       source: "text",
-      summary,
-      actionItems,
-      decisions,
+      ...parsed,
     });
   } catch (err) {
     console.error("Summarize text error:", err);
-    res.status(500).json({
+
+    return res.status(500).json({
       error: "AI generation failed",
       details: err.message,
     });
@@ -119,43 +116,20 @@ export const summarizeUploadedFile = async (req, res) => {
     }
 
     const raw = await generateAIResponse(fileText, prompt);
+    const parsed = parseAIResponse(raw);
 
-    const summaryMatch = raw.match(/Summary:(.*?)(Action Items:|Decisions:|$)/s);
-    const actionsMatch = raw.match(/Action Items:(.*?)(Decisions:|$)/s);
-    const decisionsMatch = raw.match(/Decisions:(.*)/s);
-
-    const summary = summaryMatch ? summaryMatch[1].trim() : raw.trim();
-
-    const actionItems = actionsMatch
-      ? actionsMatch[1]
-          .split("\n")
-          .map((a) => a.replace(/^\s*(\d+\.|-)\s*/, "").trim())
-          .filter(Boolean)
-          .filter((a) => a.toLowerCase() !== "not mentioned")
-      : [];
-
-    const decisions = decisionsMatch
-      ? decisionsMatch[1]
-          .split("\n")
-          .map((d) => d.replace(/^\s*(\d+\.|-)\s*/, "").trim())
-          .filter(Boolean)
-          .filter((d) => d.toLowerCase() !== "not mentioned")
-      : [];
-
-    res.json({
+    return res.json({
       success: true,
       source: "file",
       fileName: req.file.originalname,
-      summary,
-      actionItems,
-      decisions,
+      ...parsed,
     });
   } catch (err) {
     console.error("Summarize file error:", err);
-    res.status(500).json({
+
+    return res.status(500).json({
       error: "File summarization failed",
       details: err.message,
     });
   }
 };
-
