@@ -122,6 +122,8 @@ backend/
 
 ---
 
+## Project live at https://khushi-lumio-v4wz.vercel.app/
+
 ## ⚙️ Installation
 
 ### Clone the Repository
