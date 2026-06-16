@@ -11,9 +11,11 @@ export const sendEmail = async ({ to, subject, text, html }) => {
     },
   });
 
+  const recipients = Array.isArray(to) ? to.join(", ") : to;
+
   await transporter.sendMail({
   from: `"AI Notes" <${process.env.BREVO_SENDER_EMAIL}>`, // must be your validated sender
-  to,
+  to: recipients,
   subject,
   text,
 });
