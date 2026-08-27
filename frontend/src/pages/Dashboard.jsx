@@ -7,6 +7,8 @@ import {
   ClipboardDocumentListIcon,
   SparklesIcon,
   DocumentArrowUpIcon,
+  DocumentTextIcon,
+  ChartBarIcon,
   PencilSquareIcon,
   BoltIcon,
   ArrowRightIcon,
@@ -65,6 +67,8 @@ const Dashboard = () => {
     totalSummaries,
     totalActionItems,
     totalDecisions,
+    totalInsights,
+    documentsWithFollowUps,
     latestActionItems,
     latestDecisions,
     recentMeetings,
@@ -89,6 +93,14 @@ const Dashboard = () => {
       (total, m) => total + (Array.isArray(m.decisions) ? m.decisions.length : 0),
       0
     );
+
+    const totalInsights = totalActionItems + totalDecisions;
+
+    const documentsWithFollowUps = safeMeetings.filter(
+      (m) =>
+        (Array.isArray(m.actionItems) && m.actionItems.length > 0) ||
+        (Array.isArray(m.decisions) && m.decisions.length > 0)
+    ).length;
 
     const sortedMeetings = [...safeMeetings].sort((a, b) => {
       const dateA = new Date(a.updatedAt || a.meetingDate || a.createdAt || 0).getTime();
@@ -133,6 +145,8 @@ const Dashboard = () => {
       totalSummaries,
       totalActionItems,
       totalDecisions,
+      totalInsights,
+      documentsWithFollowUps,
       latestActionItems,
       latestDecisions,
       recentMeetings,
@@ -275,6 +289,60 @@ const Dashboard = () => {
                 </div>
               );
             })}
+          </section>
+
+          <section className="rounded-2xl bg-slate-900 p-5 text-white shadow-sm">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-300">
+                  Impact Metrics
+                </p>
+                <h2 className="mt-1 text-lg font-semibold">Your workflow impact</h2>
+              </div>
+              <p className="text-sm text-slate-300">Based on your saved meeting documents</p>
+            </div>
+
+            <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {[
+                {
+                  label: "Documents processed",
+                  value: totalMeetings,
+                  detail: "transcripts and notes stored",
+                  icon: DocumentTextIcon,
+                },
+                {
+                  label: "Summaries generated",
+                  value: totalSummaries,
+                  detail: `${completionRate}% of documents completed`,
+                  icon: SparklesIcon,
+                },
+                {
+                  label: "Insights extracted",
+                  value: totalInsights,
+                  detail: `${totalDecisions} decisions and ${totalActionItems} actions`,
+                  icon: ChartBarIcon,
+                },
+                {
+                  label: "Follow-up coverage",
+                  value: documentsWithFollowUps,
+                  detail: "documents with next steps",
+                  icon: ClipboardDocumentListIcon,
+                },
+              ].map((metric) => {
+                const Icon = metric.icon;
+
+                return (
+                  <div key={metric.label} className="rounded-xl bg-white/10 p-4 ring-1 ring-white/10">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm text-slate-300">{metric.label}</p>
+                      <Icon className="h-5 w-5 shrink-0 text-amber-300" />
+                    </div>
+                    <p className="mt-3 text-3xl font-bold">{metric.value}</p>
+                    <p className="mt-1 text-xs text-slate-400">{metric.detail}</p>
+                  </div>
+                );
+              })}
+            </div>
           </section>
 
           <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
