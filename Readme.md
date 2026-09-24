@@ -75,7 +75,7 @@ An AI-powered meeting management platform that helps teams and individuals gener
 
 ### AI Integration
 
-* Google Gemini API
+* Groq api
 
 ### Email Service
 
