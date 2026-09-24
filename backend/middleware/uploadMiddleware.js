@@ -25,7 +25,7 @@ const fileFilter = (req, file, cb) => {
 
   const hasAllowedMimeType = allowedMimeTypes.includes(file.mimetype);
 
-  if (hasAllowedExtension || hasAllowedMimeType) {
+  if (hasAllowedExtension && hasAllowedMimeType) {
     cb(null, true);
   } else {
     cb(
@@ -45,4 +45,18 @@ const upload = multer({
   },
 });
 
-export const uploadSingleTextFile = upload.single("file");
+export const uploadSingleTextFile = (req, res, next) => {
+  upload.single("file")(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res.status(400).json({
+          error: "File is too large. Maximum allowed size is 2 MB.",
+        });
+      }
+      return res.status(400).json({ error: err.message });
+    } else if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    next();
+  });
+};

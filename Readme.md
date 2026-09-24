@@ -151,7 +151,7 @@ MONGO_URI=your_mongodb_connection_string
 
 JWT_SECRET=your_jwt_secret
 
-GROQ_API_KEY=your_gemini_api_key
+GROQ_API_KEY=your_groq_api_key
 
 EMAIL_USER=your_email
 EMAIL_PASS=your_email_password
@@ -198,7 +198,7 @@ npm run dev
 | PORT             | Backend server port         |
 | MONGO_URI        | MongoDB connection string   |
 | JWT_SECRET       | JWT secret key              |
-| GROQ_API_KEY   | Gemini API key              |
+| GROQ_API_KEY     |   Groq API key              |
 | EMAIL_USER       | Email address for reports   |
 | EMAIL_PASS       | Email password/app password |
 | GOOGLE_CLIENT_ID | Google OAuth Client ID      |

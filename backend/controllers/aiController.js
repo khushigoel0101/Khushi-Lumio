@@ -9,37 +9,34 @@ Strictly extract only from the provided content.
 Do not hallucinate.
 Do not add assumptions.
 
-Return the result in this format:
+Return the result STRICTLY as a valid JSON object in this exact shape:
 
-Summary:
-...
+{
+  "summary": "string",
+  "actionItems": ["string", "string"],
+  "decisions": ["string", "string"]
+}
 
-Action Items:
-- ...
-
-Decisions:
-- ...
-
-If any section is missing, write "Not mentioned".
+If a section has nothing to report, use an empty string for summary or an empty array for actionItems/decisions.
+Do not include any text outside the JSON object.
 `.trim();
 
 const parseAIResponse = (raw) => {
-  const summaryMatch = raw.match(/Summary:(.*?)(Action Items:|Decisions:|$)/is);
-  const actionsMatch = raw.match(/Action Items:(.*?)(Decisions:|$)/is);
-  const decisionsMatch = raw.match(/Decisions:(.*)/is);
-
-  const cleanList = (text = "") =>
-    text
-      .split("\n")
-      .map((item) => item.replace(/^\s*(\d+\.|-|\*)\s*/, "").trim())
-      .filter(Boolean)
-      .filter((item) => item.toLowerCase() !== "not mentioned");
-
-  return {
-    summary: summaryMatch ? summaryMatch[1].trim() : raw.trim(),
-    actionItems: actionsMatch ? cleanList(actionsMatch[1]) : [],
-    decisions: decisionsMatch ? cleanList(decisionsMatch[1]) : [],
-  };
+  try {
+    const parsed = JSON.parse(raw);
+    return {
+      summary: typeof parsed.summary === "string" ? parsed.summary.trim() : "",
+      actionItems: Array.isArray(parsed.actionItems) ? parsed.actionItems : [],
+      decisions: Array.isArray(parsed.decisions) ? parsed.decisions : [],
+    };
+  } catch (err) {
+    console.error("Failed to parse AI JSON response:", err.message);
+    return {
+      summary: raw?.trim() || "",
+      actionItems: [],
+      decisions: [],
+    };
+  }
 };
 
 const extractTextFromFile = async (file) => {

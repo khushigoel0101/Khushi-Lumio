@@ -5,6 +5,7 @@ const API = axios.create({
 });
 
 API.interceptors.request.use((config) => {
+  
   const token = localStorage.getItem("authToken");
 
   if (token) {
@@ -14,6 +15,18 @@ API.interceptors.request.use((config) => {
 
   return config;
 });
+
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Auth
 export const register = async ({ fullName, email, password }) => {
