@@ -142,12 +142,12 @@ cd backend
 npm install
 ```
 
-Create a `.env` file:
+Create `backend/config/.env` (the backend loads this exact path):
 
 ```env
 PORT=5000
 
-MONGO_URI=your_mongodb_connection_string
+MONGODB_URI=mongodb://127.0.0.1:27017/notes_db
 
 JWT_SECRET=your_jwt_secret
 
@@ -196,7 +196,7 @@ npm run dev
 | Variable         | Description                 |
 | ---------------- | --------------------------- |
 | PORT             | Backend server port         |
-| MONGO_URI        | MongoDB connection string   |
+| MONGODB_URI      | MongoDB connection string   |
 | JWT_SECRET       | JWT secret key              |
 | GROQ_API_KEY     |   Groq API key              |
 | EMAIL_USER       | Email address for reports   |

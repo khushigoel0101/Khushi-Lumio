@@ -10,6 +10,11 @@ const TIMEOUT_MS = 20000;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function callGroq(text, prompt) {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    throw new Error("Missing GROQ_API_KEY in config/.env");
+  }
+
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
@@ -18,10 +23,10 @@ async function callGroq(text, prompt) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.GROQ_API_KEY}`
+        Authorization: `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: [
           { role: "system", content: prompt },
           { role: "user", content: text }

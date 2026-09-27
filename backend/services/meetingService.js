@@ -52,13 +52,24 @@ export const createMeeting = async (req, res) => {
 
 export const getMeetings = async (req, res) => {
   try {
-    const meetings = await Meeting.find({ user: req.user._id }).sort({
+    const {cursor} = req.query;
+    const limit = 5;
+    const query = { user: req.user._id };
+    if(cursor){
+      query.createdAt = {$lt: new Date(cursor)};
+    }
+    const results = await Meeting.find(query).sort({
       createdAt: -1,
-    });
+    }).limit(limit + 1);
+
+    const hasMore = results.length > limit;
+    const meetings = hasMore ? results.slice(0, limit) : results;
+    const nextCursor = hasMore ? meetings[meetings.length - 1].createdAt : null;
 
     res.status(200).json({
       success: true,
       meetings,
+      nextCursor
     });
   } catch (error) {
     console.error("getMeetings error:", error);

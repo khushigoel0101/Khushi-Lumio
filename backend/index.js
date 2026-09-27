@@ -20,15 +20,6 @@ if (!mongoURI) {
   process.exit(1);
 }
 
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-mongoose.connection.on("connected", () => {
-  console.log("MongoDB connected");
-});
-
 mongoose.connection.on("error", (err) => {
   console.error("MongoDB connection error:", err);
 });
@@ -61,4 +52,12 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+try {
+  await mongoose.connect(mongoURI);
+  console.log("MongoDB connected");
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+} catch (err) {
+  console.error("Failed to connect to MongoDB:", err.message);
+  process.exit(1);
+}
