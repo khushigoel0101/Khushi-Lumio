@@ -101,7 +101,7 @@ router.post("/google", async (req, res) => {
     if (!email_verified) {
       return res.status(400).json({ error: "Email not verified by Google" });
     }
-l
+
     let user = await User.findOne({ email });
 
     
@@ -114,7 +114,6 @@ l
         authProvider: "google",
       });
     } else {
-     
       user.googleId = sub;
       user.authProvider = "google";
       user.name = name || user.name;

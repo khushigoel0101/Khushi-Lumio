@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import hero from '../../assets/hero.png';
 
 const Banner = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const Banner = () => {
 
           {/* Image */}
           <img
-            src="https://illustrations.popsy.co/gray/work-from-home.svg"
+            src={hero}
             alt="meeting assistant"
             className="relative w-full max-w-md"
           />

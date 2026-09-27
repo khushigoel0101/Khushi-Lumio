@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import API from "../services/api";
 import AppLayout from "../components/Layout/AppLayout";
+import ConfirmDialog from "../components/Layout/ConfirmDialog";
 
 const Meetings = () => {
   const navigate = useNavigate();
@@ -13,6 +14,11 @@ const Meetings = () => {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [expandedId, setExpandedId] = useState(null);
+
+  // Delete confirmation state
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const fetchMeetings = async () => {
     try {
@@ -50,29 +56,45 @@ const Meetings = () => {
     fetchMeetings();
   }, [id]);
 
-  const handleDelete = async (meetingId) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this meeting?"
-    );
+  const requestDelete = (meetingId) => {
+    setDeleteError("");
+    setDeleteTargetId(meetingId);
+  };
 
-    if (!confirmDelete) return;
+  const cancelDelete = () => {
+    if (isDeleting) return; // don't let them back out mid-request
+    setDeleteTargetId(null);
+    setDeleteError("");
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
 
     try {
-      await API.delete(`/api/meetings/${meetingId}`);
+      setIsDeleting(true);
+      setDeleteError("");
 
-      if (id && meetingId === id) {
+      await API.delete(`/api/meetings/${deleteTargetId}`);
+
+      if (id && deleteTargetId === id) {
         navigate("/meetings");
         return;
       }
 
-      setMeetings((prev) => prev.filter((meeting) => meeting._id !== meetingId));
+      setMeetings((prev) =>
+        prev.filter((meeting) => meeting._id !== deleteTargetId)
+      );
 
-      if (expandedId === meetingId) {
+      if (expandedId === deleteTargetId) {
         setExpandedId(null);
       }
+
+      setDeleteTargetId(null);
     } catch (err) {
       console.error("Delete meeting error:", err);
-      alert("Failed to delete meeting.");
+      setDeleteError("Failed to delete meeting. Please try again.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -148,8 +170,7 @@ const Meetings = () => {
   }, [meetings, search, sortBy]);
 
   return (
-    
-      <AppLayout>
+    <AppLayout>
       <div className="flex-1">
         <main className="space-y-6 p-4 sm:p-6">
           {!id && (
@@ -296,7 +317,7 @@ const Meetings = () => {
                       )}
 
                       <button
-                        onClick={() => handleDelete(meeting._id)}
+                        onClick={() => requestDelete(meeting._id)}
                         className="rounded-lg bg-red-100 px-4 py-2 text-sm font-medium text-red-700 transition hover:bg-red-200"
                       >
                         Delete
@@ -309,7 +330,20 @@ const Meetings = () => {
           )}
         </main>
       </div>
-      </AppLayout>
+
+      <ConfirmDialog
+        isOpen={Boolean(deleteTargetId)}
+        title="Delete this meeting?"
+        message="This will permanently remove the meeting, its summary, and any extracted action items. This can't be undone."
+        confirmLabel="Delete"
+        loadingLabel="Deleting..."
+        variant="danger"
+        isLoading={isDeleting}
+        errorText={deleteError}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
+    </AppLayout>
   );
 };
 
