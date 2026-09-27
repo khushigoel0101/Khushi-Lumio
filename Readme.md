@@ -215,22 +215,27 @@ npm run dev
 ## 📸 Application Modules
 
 ### Landing Page
+<img width="1898" height="872" alt="image" src="https://github.com/user-attachments/assets/4eeceeb4-cc87-490f-bc20-78eb8d3ce72b" />
 
 Modern introduction to the platform and its capabilities.
 
 ### Dashboard
+<img width="1898" height="876" alt="image" src="https://github.com/user-attachments/assets/faf643db-46f8-4b74-9c22-46ee56e3886c" />
 
 Displays meeting statistics, quick actions, and overall activity.
 
 ### Generate Summary
+<img width="1896" height="879" alt="image" src="https://github.com/user-attachments/assets/b676088a-ce11-48c3-9a01-e0c33ee75776" />
 
 Generate AI-powered meeting summaries from notes or uploaded content.
 
 ### Meetings
+<img width="1898" height="874" alt="image" src="https://github.com/user-attachments/assets/2be2011e-a9e8-4a59-a17d-be29f04b179f" />
 
 View, manage, and revisit saved meeting reports.
 
 ### Profile
+<img width="1914" height="870" alt="image" src="https://github.com/user-attachments/assets/c98d9349-4618-4668-8a40-f2d9b9390a52" />
 
 View account information and meeting-related statistics.
 
