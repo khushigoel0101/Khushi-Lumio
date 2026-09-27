@@ -230,7 +230,7 @@ Displays meeting statistics, quick actions, and overall activity.
 Generate AI-powered meeting summaries from notes or uploaded content.
 
 ### Meetings
-<img width="1898" height="874" alt="image" src="https://github.com/user-attachments/assets/2be2011e-a9e8-4a59-a17d-be29f04b179f" />
+<img width="1899" height="872" alt="image" src="https://github.com/user-attachments/assets/8642d3c8-400b-487a-b607-89a461c648b8" />
 
 View, manage, and revisit saved meeting reports.
 
